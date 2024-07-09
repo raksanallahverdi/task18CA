@@ -19,7 +19,8 @@ CREATE TABLE Students (
     FOREIGN KEY (GroupId) REFERENCES Groups(Id)
 );
 
-CREATE TRIGGER CheckGroupLimit
+
+CREATE OR ALTER TRIGGER CheckGroupLimitandAge
 ON Students
 INSTEAD OF INSERT
 AS
@@ -37,16 +38,7 @@ BEGIN
         SELECT Name, Surname, Email, PhoneNumber, BirthDate, GPA, GroupId
         FROM inserted
     END
-END
-
-
-
-CREATE TRIGGER CheckStudentAge
-ON Students
-After INSERT
-AS
-BEGIN
-    DECLARE @BirthDate DATE
+	 DECLARE @BirthDate DATE
     SELECT @BirthDate = BirthDate FROM inserted
 
     IF DATEDIFF(YEAR, @BirthDate, GETDATE()) < 16
@@ -59,7 +51,10 @@ BEGIN
         SELECT Name, Surname, Email, PhoneNumber, BirthDate, GPA, GroupId
         FROM inserted
     END
+
 END
+
+
 
 CREATE FUNCTION GetGroupAverageGPA (@GroupId INT)
 RETURNS FLOAT

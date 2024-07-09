@@ -33,9 +33,9 @@ BEGIN
     RETURN @AvgSalary
 END
 
-CREATE TRIGGER CheckWorkerAge
+CREATE TRIGGER CheckWorkerAgeandPositionLimit
 ON Workers
-After INSERT
+INSTEAD OF INSERT
 AS
 BEGIN
     DECLARE @BirthDate DATE
@@ -51,14 +51,7 @@ BEGIN
         SELECT Name, Surname, PhoneNumber, Salary, BirthDate, DepartmentId, PositionId
         FROM inserted
     END
-END
-
-CREATE TRIGGER CheckPositionLimit
-ON Workers
-INSTEAD OF INSERT
-AS
-BEGIN
-    DECLARE @PositionId INT
+	 DECLARE @PositionId INT
     SELECT @PositionId = PositionId FROM inserted
 
     IF (SELECT COUNT(*) FROM Workers WHERE PositionId = @PositionId) >= (SELECT Limit FROM Positions WHERE Id = @PositionId)
@@ -71,4 +64,7 @@ BEGIN
         SELECT Name, Surname, PhoneNumber, Salary, BirthDate, DepartmentId, PositionId
         FROM inserted
     END
+
 END
+
+
